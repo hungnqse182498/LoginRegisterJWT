@@ -1,37 +1,39 @@
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Auth API",
-      version: "1.0.0",
-      description: "API xác thực người dùng với JWT",
-    },
-    servers: [
-      {
-        url: "http://localhost:5000/api", // chỉnh lại nếu deploy
+function swaggerDocs(app, port) {
+  const BASE_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`;
+
+  const options = {
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "Auth API",
+        version: "1.0.0",
+        description: "API xác thực người dùng với JWT",
       },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
+      servers: [
+        {
+          url: `${BASE_URL}/api`,  // dùng link động
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
         },
       },
     },
-  },
-  apis: ["./routes/*.js"], // nơi có comment @swagger
-};
+    apis: ["./routes/*.js"], // đọc comment @swagger trong routes
+  };
 
-const swaggerSpec = swaggerJsdoc(options);
-
-function swaggerDocs(app, port) {
+  const swaggerSpec = swaggerJsdoc(options);
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  console.log(`Swagger docs chạy tại http://localhost:${port}/docs`);
+
+  console.log(`📖 Swagger docs available at ${BASE_URL}/docs`);
 }
 
 module.exports = swaggerDocs;
