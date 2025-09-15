@@ -1,7 +1,6 @@
 const express = require("express");
-const { register, login } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
-
+const { register, login, requestReset, verifyAndReset } = require("../controllers/authController");
 const router = express.Router();
 /**
  * @swagger
@@ -10,7 +9,7 @@ const router = express.Router();
  *   description: API xác thực người dùng (JWT)
  */
 
-// Đăng ký
+// ================== REGISTER ==================
 /**
  * @swagger
  * /auth/register:
@@ -42,7 +41,8 @@ const router = express.Router();
  */
 router.post("/register", register);
 
-// Đăng nhập
+// ================== LOGIN ==================
+
 /**
  * @swagger
  * /auth/login:
@@ -71,6 +71,7 @@ router.post("/register", register);
  */
 router.post("/login", login);
 
+// ================== GET PROFILE ==================
 // Route test middleware: chỉ ai có token mới truy cập được
 /**
  * @swagger
@@ -86,6 +87,62 @@ router.post("/login", login);
  *       401:
  *         description: Chưa đăng nhập hoặc token không hợp lệ
  */
+
+// ================== REQUEST RESET (OTP) ==================
+/**
+ * @swagger
+ * /auth/request-reset:
+ *   post:
+ *     summary: Gửi OTP reset mật khẩu
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Nếu email tồn tại, OTP đã được gửi
+ */
+router.post("/request-reset", requestReset);
+
+// ================== VERIFY & RESET ==================
+/**
+ * @swagger
+ * /auth/verify-reset:
+ *   post:
+ *     summary: Xác thực OTP và đặt lại mật khẩu
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - otp
+ *               - newPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Đặt lại mật khẩu thành công
+ *       400:
+ *         description: OTP không hợp lệ
+ */
+router.post("/verify-reset", verifyAndReset);
 
 router.get("/profile", authMiddleware, (req, res) => {
   res.json({

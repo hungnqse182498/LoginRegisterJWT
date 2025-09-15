@@ -6,9 +6,9 @@ const connectDB = async () => {
     // kết nối tới MongoDB Atlas, URI lấy từ file .env
     await mongoose.connect(process.env.MONGO_URI);
 
-    console.log("✅ MongoDB connected successfully");
+    console.log("MongoDB kết nối thành công");
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
+    console.error("MongoDB kết nối thất bại:", error.message);
     process.exit(1); // thoát app nếu lỗi
   }
 };

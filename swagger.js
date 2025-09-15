@@ -14,7 +14,7 @@ function swaggerDocs(app, port) {
       },
       servers: [
         {
-          url: `${BASE_URL}/api`,  // dùng link động
+          url: `${BASE_URL}/api`,
         },
       ],
       components: {
@@ -33,7 +33,7 @@ function swaggerDocs(app, port) {
   const swaggerSpec = swaggerJsdoc(options);
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-  console.log(`📖 Swagger docs available at ${BASE_URL}/docs`);
+  console.log(`Swagger: ${BASE_URL}/docs`);
 }
 
 module.exports = swaggerDocs;
