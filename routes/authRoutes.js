@@ -1,20 +1,41 @@
 const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
-const { register, login, requestReset, verifyAndReset } = require("../controllers/authController");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
+const { register, login, requestReset, verifyOtp, resetPasswordWithToken, sendRegisterOtp, verifyRegisterOtp, completeRegister, refreshTokenController } = require("../controllers/authController");
+// ================== REFRESH TOKEN ==================
 /**
  * @swagger
- * tags:
- *   name: Auth
- *   description: API xác thực người dùng (JWT)
- */
-
-// ================== REGISTER ==================
-/**
- * @swagger
- * /auth/register:
+ * /auth/refresh-token:
  *   post:
- *     summary: Đăng ký tài khoản
+ *     summary: Cấp mới access token bằng refresh token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Access token mới
+ *       401:
+ *         description: Thiếu refresh token
+ *       403:
+ *         description: Refresh token không hợp lệ hoặc đã hết hạn
+ */
+router.post("/refresh-token", refreshTokenController);
+
+// ================== REGISTER WITH OTP ==================
+/**
+ * @swagger
+ * /auth/register-send-otp:
+ *   post:
+ *     summary: Gửi OTP đăng ký tài khoản
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -34,12 +55,72 @@ const router = express.Router();
  *               password:
  *                 type: string
  *     responses:
+ *       200:
+ *         description: OTP đăng ký đã được gửi đến email
+ *       400:
+ *         description: Lỗi gửi OTP
+ */
+router.post("/register-send-otp", sendRegisterOtp);
+
+/**
+ * @swagger
+ * /auth/register-verify-otp:
+ *   post:
+ *     summary: Xác thực OTP đăng ký, trả về token tạm
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - otp
+ *             properties:
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Xác thực OTP thành công, trả về token
+ *       400:
+ *         description: OTP không hợp lệ
+ */
+router.post("/register-verify-otp", verifyRegisterOtp);
+
+/**
+ * @swagger
+ * /auth/register-complete:
+ *   post:
+ *     summary: Hoàn tất đăng ký bằng token tạm
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
  *       201:
  *         description: Đăng ký thành công
  *       400:
- *         description: Lỗi tạo tài khoản
+ *         description: Token không hợp lệ hoặc thông tin đăng ký không tồn tại
  */
-router.post("/register", register);
+router.post("/register-complete", completeRegister);
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: API xác thực người dùng (JWT)
+ */
+
 
 // ================== LOGIN ==================
 
@@ -112,12 +193,13 @@ router.post("/login", login);
  */
 router.post("/request-reset", requestReset);
 
-// ================== VERIFY & RESET ==================
+
+// ================== VERIFY OTP ==================
 /**
  * @swagger
- * /auth/verify-reset:
+ * /auth/verify-otp:
  *   post:
- *     summary: Xác thực OTP và đặt lại mật khẩu
+ *     summary: Xác thực OTP và nhận token đổi mật khẩu
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -128,21 +210,50 @@ router.post("/request-reset", requestReset);
  *             required:
  *               - email
  *               - otp
- *               - newPassword
  *             properties:
  *               email:
  *                 type: string
  *               otp:
  *                 type: string
+ *     responses:
+ *       200:
+ *         description: Xác thực OTP thành công, trả về token
+ *       400:
+ *         description: OTP không hợp lệ
+ */
+router.post("/verify-otp", verifyOtp);
+
+// ================== RESET PASSWORD WITH TOKEN ==================
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Đổi mật khẩu mới bằng token xác thực OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               token:
+ *                 type: string
  *               newPassword:
+ *                 type: string
+ *               confirmPassword:
  *                 type: string
  *     responses:
  *       200:
  *         description: Đặt lại mật khẩu thành công
  *       400:
- *         description: OTP không hợp lệ
+ *         description: Token không hợp lệ hoặc mật khẩu không khớp
  */
-router.post("/verify-reset", verifyAndReset);
+router.post("/reset-password", resetPasswordWithToken);
 
 router.get("/profile", authMiddleware, (req, res) => {
   res.json({

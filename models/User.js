@@ -16,6 +16,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,   // bắt buộc nhập
   },
+  role: {
+    type: String,
+    enum: ["user", "admin"], // chỉ cho phép 2 giá trị này
+    default: "user",         // mặc định là user
+    required: true,
+  },
+  refreshToken: {
+    type: String,
+    default: null,
+  },
 }, { timestamps: true }); // tự động thêm createdAt và updatedAt
 
 // Tạo model User dựa trên schema
