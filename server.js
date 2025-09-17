@@ -13,9 +13,11 @@ app.use(cors());
 
 // import routes
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.get("/", (req, res) => {
-  res.send("API đang chạy! Mở Swagger UI tại /docs");
+  res.send("API đang chạy! Thêm /docs để mở Swagger");
 });
 
 // kết nối DB

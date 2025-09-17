@@ -111,19 +111,19 @@ const login = async (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { id: user._id, email: user.email, username: user.username },
+      { id: user._id, email: user.email, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "1h" }
     );
     const refreshToken = jwt.sign(
-      { id: user._id, email: user.email, username: user.username },
+      { id: user._id, email: user.email, username: user.username, role: user.role },
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
     user.refreshToken = refreshToken;
     await user.save();
-    const { password: _, ...userData } = user.toObject();
-    res.json({ message: "Đăng nhập thành công", profile: userData, accessToken, refreshToken });
+  const { password: _, refreshToken: __, ...userData } = user.toObject();
+  res.json({ message: "Đăng nhập thành công", profile: userData, accessToken, refreshToken });
   } catch (error) {
     res.status(500).json({ message: "Lỗi", error }); 
   }

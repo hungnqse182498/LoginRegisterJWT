@@ -1,6 +1,6 @@
 const mongoose = require("mongoose"); // import mongoose để kết nối MongoDB
 
-// hàm async để kết nối
+// hàm async (để đử dụng await) kết nối DB
 const connectDB = async () => {
   try {
     // kết nối tới MongoDB Atlas, URI lấy từ file .env
