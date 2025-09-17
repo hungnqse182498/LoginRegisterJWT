@@ -1,17 +1,15 @@
-const nodemailer = require('nodemailer'); // import nodemailer để gửi email
+const nodemailer = require('nodemailer'); 
 
-// cấu hình transporter để gửi email, thông tin lấy từ file .env
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 465,
-  secure: process.env.SMTP_SECURE === 'true', // true nếu 465, false nếu 587
+  secure: process.env.SMTP_SECURE === 'true', 
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
 });
 
-// hàm gửi email, tham số là object { to, subject, text, html }
 async function sendEmail({ to, subject, text, html }) {
   try {
     const info = await transporter.sendMail({

@@ -1,35 +1,38 @@
-const mongoose = require("mongoose"); // import mongoose để tạo schema và model
+const mongoose = require("mongoose"); 
 
-// Định nghĩa schema cho User
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: true,   // bắt buộc nhập
-    unique: true,     // không được trùng username
+    required: true,   
+    unique: true,    
   },
   email: {
     type: String,
     required: true,
-    unique: true,     // email cũng không được trùng
+    unique: true,
+    lowercase: true, 
+    trim: true
   },
   password: {
     type: String,
-    required: true,   // bắt buộc nhập
+    required: true,   
   },
   role: {
     type: String,
-    enum: ["user", "admin"], // chỉ cho phép 2 giá trị này
-    default: "user",         // mặc định là user
+    enum: ["user", "admin"], 
+    default: "user",         
     required: true,
   },
   refreshToken: {
     type: String,
     default: null,
   },
-}, { timestamps: true }); // tự động thêm createdAt và updatedAt
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+}, { timestamps: true }); 
 
-// Tạo model User dựa trên schema
 const User = mongoose.model("User", userSchema);
 
-// Export model để dùng ở controller
 module.exports = User;

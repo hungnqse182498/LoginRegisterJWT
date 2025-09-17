@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-// Middleware để xác thực token
 const authMiddleware = (req, res, next) => {
-  // lấy token từ header: Authorization: Bearer <token>
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -11,12 +9,9 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    // kiểm tra token có hợp lệ không
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // gắn thông tin user vào request để các route khác dùng
     req.user = decoded;
-    next(); // cho phép đi tiếp sang route
+    next(); 
   } catch (error) {
     return res.status(403).json({ message: "Token không hợp lệ hoặc đã hết hạn" });
   }

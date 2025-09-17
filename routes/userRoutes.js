@@ -112,8 +112,6 @@ router.post("/", createUser);
  *                 type: string
  *               email:
  *                 type: string
- *               password:
- *                 type: string
  *               role:
  *                 type: string
  *                 enum: [user, admin]
