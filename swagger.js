@@ -8,7 +8,7 @@ function swaggerDocs(app, port) {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "Auth API",
+        title: "Project Học Nodejs",
         version: "1.0.0",
         description: "API xác thực người dùng với JWT",
       },

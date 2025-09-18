@@ -1,26 +1,39 @@
 const mongoose = require("mongoose"); 
 
 const userSchema = new mongoose.Schema({
+  avatar: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Avatar",
+    default: null,
+  },
   username: {
     type: String,
-    required: true,   
-    unique: true,    
+    required: true,
+    unique: true,
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true, 
+    lowercase: true,
     trim: true
   },
-  password: {
+  phone: {
     type: String,
-    required: true,   
+    default: "",
+  },
+  address: {
+    type: String,
+    default: "",
   },
   role: {
     type: String,
-    enum: ["user", "admin"], 
-    default: "user",         
+    enum: ["user", "admin"],
+    default: "user",
+    required: true,
+  },
+  password: {
+    type: String,
     required: true,
   },
   refreshToken: {
@@ -31,7 +44,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-}, { timestamps: true }); 
+}, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 
