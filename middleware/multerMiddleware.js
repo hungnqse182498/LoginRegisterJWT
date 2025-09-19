@@ -1,7 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 
-// Thư mục lưu file upload
 const uploadDir = path.join(__dirname, "../image");
 
 const storage = multer.diskStorage({

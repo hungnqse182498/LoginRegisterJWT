@@ -10,7 +10,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Public folder image để truy cập ảnh qua HTTP
 app.use('/image', express.static('image'));
 
 const authRoutes = require("./routes/authRoutes");
